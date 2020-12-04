@@ -123,7 +123,7 @@ test_dataset_params = dict(
 ###############################################################################
 # 3. test
 
-batch_size = 13
+batch_size = 192
 
 # data
 # test_root = data_root + 'evaluation/'

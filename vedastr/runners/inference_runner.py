@@ -1,4 +1,4 @@
-import re
+# import re
 
 import torch
 import torch.nn.functional as F
@@ -75,8 +75,8 @@ class InferenceRunner(Common):
             if not sensitive:
                 pstr = pstr.lower()
 
-            if character:
-                pstr = re.sub('[^{}]'.format(character), '', pstr)
+            # if character:
+            #     pstr = re.sub('[^{}]'.format(character), '', pstr)
 
             preds_str.append(pstr)
 

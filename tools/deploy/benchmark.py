@@ -11,6 +11,7 @@ from volksdep.benchmark import benchmark
 from vedastr.runners import TestRunner
 from vedastr.utils import Config
 from tools.deploy.utils import CALIBRATORS, CalibDataset, MetricDataset, Metric
+import torch.utils.data as tud
 
 
 def parse_args():
@@ -50,7 +51,7 @@ def main():
 
     # image = Image.open(args.image)
     image = cv2.imread(args.image)
-    aug= runner.transform(image=image,label='')
+    aug= runner.transform(image=image,label='1')
     image, dummy_label = aug['image'], aug['label']
     image = image.unsqueeze(0)
     input_len = runner.converter.test_encode(1)[0]
@@ -69,7 +70,15 @@ def main():
                                      runner.transform, need_text)
         int8_calibrator = [CALIBRATORS[mode](dataset=calib_dataset)
                            for mode in args.calibration_modes]
-    dataset = runner.test_dataloader.dataset
+    assert isinstance(runner.test_dataloader['all'], tud.DataLoader), \
+        "Only suppor single dataloader in training phase. " \
+        "Check the type of dataset please. " \
+        "If the type of dataset is list, then the type of build datalodaer will be dict." \
+        "If the type of dataset is torch.utils.data.Dataset, " \
+        "the type of build dataloader will be torch.utils.data.Dataloader. " \
+        "If you wanna combine different dataset, consider using ConcatDataset in your config file please."
+
+    dataset = runner.test_dataloader['all'].dataset
     dataset = MetricDataset(dataset, runner.converter, need_text)
     metric = Metric(runner.metric, runner.converter)
     benchmark(model, shape, dtypes=dtypes, iters=iters,

@@ -3,18 +3,19 @@ root_workdir = 'workdir'
 
 ###############################################################################
 # 1. deploy
+from char import character
 size = (32, 100)
 mean, std = 0.5, 0.5
 
-character = '0123456789abcdefghijklmnopqrstuvwxyz'
-sensitive = False
+character = character
+sensitive = True
 batch_max_length = 25
 
 norm_cfg = dict(type='BN')
 num_class = len(character) + 1
 
 deploy = dict(
-    gpu_id='0',
+    gpu_id='3',
     transform=[
         dict(type='Sensitive', sensitive=sensitive, need_character=character),
         dict(type='ToGray'),
@@ -80,7 +81,7 @@ deploy = dict(
             activation=None,
             pool=dict(
                 type='AdaptiveAvgPool2d',
-                output_size=1,
+                output_size=(1, num_class),
             ),
         ),
     ),
@@ -114,18 +115,19 @@ test_dataset_params = dict(
     character=character,
 )
 
-data_root = '../../../../dataset/str/data/data_lmdb_release/'
+# data_root = '../../../../dataset/str/data/data_lmdb_release/'
 
 ###############################################################################
 # 3. test
 batch_size = 192
 
-test_root = data_root + 'evaluation/'
-test_folder_names = ['CUTE80', 'IC03_867', 'IC13_1015', 'IC15_2077',
-                     'IIIT5k_3000', 'SVT', 'SVTP']
-test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
-                     **test_dataset_params) for f_name in test_folder_names]
-
+# test_root = data_root + 'evaluation/'
+# test_folder_names = ['CUTE80', 'IC03_867', 'IC13_1015', 'IC15_2077',
+#                      'IIIT5k_3000', 'SVT', 'SVTP']
+# test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
+#                      **test_dataset_params) for f_name in test_folder_names]
+test_dataset = dict(type='LmdbDataset', root="table_lmdb_dataset/val",
+                     **test_dataset_params)
 test = dict(
     data=dict(
         dataloader=dict(
@@ -145,21 +147,23 @@ test = dict(
 
 ###############################################################################
 # train data
-train_root = data_root + 'training/'
-## MJ dataset
-train_root_mj = train_root + 'MJ/'
-mj_folder_names = ['/MJ_test', 'MJ_valid', 'MJ_train']
-## ST dataset
-train_root_st = train_root + 'ST/'
+# train_root = data_root + 'training/'
+# ## MJ dataset
+# train_root_mj = train_root + 'MJ/'
+# mj_folder_names = ['/MJ_test', 'MJ_valid', 'MJ_train']
+# ## ST dataset
+# train_root_st = train_root + 'ST/'
 
-train_dataset_mj = [dict(type='LmdbDataset', root=train_root_mj + folder_name)
-                    for folder_name in mj_folder_names]
-train_dataset_st = [dict(type='LmdbDataset', root=train_root_st)]
+# train_dataset_mj = [dict(type='LmdbDataset', root=train_root_mj + folder_name)
+#                     for folder_name in mj_folder_names]
+# train_dataset_st = [dict(type='LmdbDataset', root=train_root_st)]
+train_dataset_st = [dict(type='LmdbDataset', root="table_lmdb_dataset/train")]
 
 # valid
-valid_root = data_root + 'validation/'
-valid_dataset = dict(type='LmdbDataset', root=valid_root, **test_dataset_params)
-
+# valid_root = data_root + 'validation/'
+# valid_dataset = dict(type='LmdbDataset', root=valid_root, **test_dataset_params)
+valid_dataset = dict(type='LmdbDataset', root="table_lmdb_dataset/val",
+                     **test_dataset_params)
 # train transforms
 train_transforms = [
     dict(type='Sensitive', sensitive=sensitive, need_character=character),
@@ -192,14 +196,14 @@ train = dict(
                 datasets=[
                     dict(
                         type='ConcatDatasets',
-                        datasets=train_dataset_mj,
-                    ),
-                    dict(
-                        type='ConcatDatasets',
                         datasets=train_dataset_st,
-                    )
+                    ),
+                    # dict(
+                    #     type='ConcatDatasets',
+                    #     datasets=train_dataset_st,
+                    # )
                 ],
-                batch_ratio=[0.5, 0.5],
+                batch_ratio=[1.0, ],
                 **dataset_params,
             ),
             transform=train_transforms,

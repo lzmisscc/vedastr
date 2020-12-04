@@ -1,14 +1,15 @@
 ###############################################################################
 # 1. deploy
+from char import character
 
 size = (32, 100)
 mean, std = 0.5, 0.5
-
+root_workdir = "workdir"
 sensitive = True
 # character = '0123456789abcdefghijklmnopq' \
 #             'rstuvwxyzABCDEFGHIJKLMNOPQRS' \
 #             'TUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'  # need character
-character = """5„ X⁄,➢ø¶m≥ε-+$σ∥~̧′∑|ß7MI‒;Ω─Δ}↓©δ†̆∼□⩾∅←≦z{⁎.ʹC=:æ卐АqR⇓♡κ4w9&Χpι3Λ▼║"≈θ_/r¢a!Q́k―̈◊Φvω●t▲☆y÷∣K˂ˆ·Ψ⋮̸○U•­J–×̇‰Α8D6Ιπc%‘YG¥ξ〉ρ∈@EF√”±≧∞Β−1∩W̄∫?η✓βυ“λ⋅ıA♯‡łΓ⩽ζ♀⊕¤▪O∙Bd⋯✗Σ​⇑*)e#'n★sT∧➔※♂f̊→♦̂»0ǂg≤Zγh’^‖⁡x°̀]£✔◆∗—b⇒♣Θ∆Lu[ɛχNǫ̌H■®i⋆>Πτ2νφ€`◦\Ø↔△<﻿lС↑SPᅟ̃∘jV∖˃(§ψ‐〈μα«"""
+character = character
 test_sensitive = True
 # test_character = '0123456789abcdefghijklmnopqrstuvwxyz'
 test_character = character
@@ -25,7 +26,7 @@ num_class = len(character) + 1
 num_steps = batch_max_length + 1
 
 deploy = dict(
-    gpu_id='0,1,2,3',
+    gpu_id='0',
     transform=[
         dict(type='Sensitive', sensitive=sensitive, need_character=character),
         dict(type='ToGray'),
@@ -220,8 +221,8 @@ batch_size = 256
 #                      'IIIT5k_3000', 'SVT', 'SVTP']
 # test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
 #                      **test_dataset_params) for f_name in test_folder_names]
-test_datqset = [dict(type='LmdbDataset', root="table_lmdb_dataset/val",
-                     **test_dataset_params)]
+test_dataset = dict(type='LmdbDataset', root="table_lmdb_dataset/val",
+                     **test_dataset_params)
 test = dict(
     data=dict(
         dataloader=dict(
@@ -301,14 +302,14 @@ train = dict(
                 datasets=[
                     dict(
                         type='ConcatDatasets',
-                        datasets=train_dataset_s,
+                        datasets=train_dataset_st,
                     ),
                     # dict(
                     #     type='ConcatDatasets',
                     #     datasets=train_dataset_st,
                     # )
                 ],
-                batch_ratio=[0.5, 0.5],
+                batch_ratio=[1.0, ],
                 **dataset_params,
             ),
             transform=train_transforms,

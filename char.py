@@ -1,9 +1,1 @@
-with open("table_lmdb_dataset/dict.txt", "r") as f:
-    t = []
-    for i in f.readlines():
-        t.append(i.strip('\n'))
-    character = set(t)
-    character.update('\u2028')
-
-with open("char.txt", "w") as f:
-    f.write(''.join(character))
+character = '\\̂●♡3\'✔Wκ=§ßΠP_⁎˂:ł∥w\u2028.h\ufeff9I〉⋆8║‡\xadY)Δ}ψ‒Ȧ̃∧ηıφ2“≥u◊→°÷С∼˃̧6〈/ [B̊€‰g*̀☆λH∗UbΩΨ↓■n∆O卐⩾ρq’⇒D♀\u200bχ@̸`Rω1F̆‖θ®♦&c♯Qξ≦·vδε○А∑”μS―≤ΧG✓ǂ–⊕∞➔!ᅟΙ«⁄4©♣E⇑j|υrα»∩£<X$#⇓⩽※̨∘νØΒm◦×⋅¥∖̈f•—¶Φaˆyτ%5ζN─\u2061¢▲ΑøT≈¤∈t∣◆;ɛ↔?i7‐★̌†k-▪Θπ"CzLV(́△∙Γ⋮♂Σs←J∫æ~pʹ±oσe,Λ≧^□+➢d✗▼0Zx‘]>β√↑„M⋯γ−̄ι∅K′l{'
