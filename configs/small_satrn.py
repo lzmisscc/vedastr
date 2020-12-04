@@ -5,11 +5,13 @@ size = (32, 100)
 mean, std = 0.5, 0.5
 
 sensitive = True
-character = '0123456789abcdefghijklmnopq' \
-            'rstuvwxyzABCDEFGHIJKLMNOPQRS' \
-            'TUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'  # need character
-test_sensitive = False
-test_character = '0123456789abcdefghijklmnopqrstuvwxyz'
+# character = '0123456789abcdefghijklmnopq' \
+#             'rstuvwxyzABCDEFGHIJKLMNOPQRS' \
+#             'TUVWXYZ!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'  # need character
+character = """5„ X⁄,➢ø¶m≥ε-+$σ∥~̧′∑|ß7MI‒;Ω─Δ}↓©δ†̆∼□⩾∅←≦z{⁎.ʹC=:æ卐АqR⇓♡κ4w9&Χpι3Λ▼║"≈θ_/r¢a!Q́k―̈◊Φvω●t▲☆y÷∣K˂ˆ·Ψ⋮̸○U•­J–×̇‰Α8D6Ιπc%‘YG¥ξ〉ρ∈@EF√”±≧∞Β−1∩W̄∫?η✓βυ“λ⋅ıA♯‡łΓ⩽ζ♀⊕¤▪O∙Bd⋯✗Σ​⇑*)e#'n★sT∧➔※♂f̊→♦̂»0ǂg≤Zγh’^‖⁡x°̀]£✔◆∗—b⇒♣Θ∆Lu[ɛχNǫ̌H■®i⋆>Πτ2νφ€`◦\Ø↔△<﻿lС↑SPᅟ̃∘jV∖˃(§ψ‐〈μα«"""
+test_sensitive = True
+# test_character = '0123456789abcdefghijklmnopqrstuvwxyz'
+test_character = character
 batch_max_length = 25
 
 dropout = 0.1
@@ -56,12 +58,14 @@ deploy = dict(
                                      dict(type='ConvModule', in_channels=1, out_channels=int(hidden_dim / 2),
                                           kernel_size=3,
                                           stride=1, padding=1, norm_cfg=batch_norm)),
-                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=2, padding=0)),
+                                    ('pool', dict(type='MaxPool2d',
+                                                  kernel_size=2, stride=2, padding=0)),
                                     ('conv',
                                      dict(type='ConvModule', in_channels=int(hidden_dim / 2), out_channels=hidden_dim,
                                           kernel_size=3,
                                           stride=1, padding=1, norm_cfg=batch_norm)),
-                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=2, padding=0)),
+                                    ('pool', dict(type='MaxPool2d',
+                                                  kernel_size=2, stride=2, padding=0)),
                                 ],
                             ),
                         ),
@@ -203,7 +207,7 @@ test_dataset_params = dict(
     character=test_character,
 )
 
-data_root = '../../../../dataset/str/data/data_lmdb_release/'
+# data_root = '../../../../dataset/str/data/data_lmdb_release/'
 
 ###############################################################################
 # 3. test
@@ -211,12 +215,13 @@ data_root = '../../../../dataset/str/data/data_lmdb_release/'
 batch_size = 256
 
 # data
-test_root = data_root + 'evaluation/'
-test_folder_names = ['CUTE80', 'IC03_867', 'IC13_1015', 'IC15_2077',
-                     'IIIT5k_3000', 'SVT', 'SVTP']
-test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
-                     **test_dataset_params) for f_name in test_folder_names]
-
+# test_root = data_root + 'evaluation/'
+# test_folder_names = ['CUTE80', 'IC03_867', 'IC13_1015', 'IC15_2077',
+#                      'IIIT5k_3000', 'SVT', 'SVTP']
+# test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
+#                      **test_dataset_params) for f_name in test_folder_names]
+test_datqset = [dict(type='LmdbDataset', root="table_lmdb_dataset/val",
+                     **test_dataset_params)]
 test = dict(
     data=dict(
         dataloader=dict(
@@ -227,7 +232,8 @@ test = dict(
         ),
         dataset=test_dataset,
         transform=[
-            dict(type='Sensitive', sensitive=test_sensitive, need_character=test_character),
+            dict(type='Sensitive', sensitive=test_sensitive,
+                 need_character=test_character),
             dict(type='ToGray'),
             dict(type='Resize', size=size),
             dict(type='Normalize', mean=mean, std=std),
@@ -243,24 +249,26 @@ test = dict(
 ###############################################################################
 # 4. train
 
-root_workdir = 'workdir'  # save directory
+# root_workdir = 'workdir'  # save directory
 
 # data
-train_root = data_root + 'training/'
-# MJ dataset
-train_root_mj = train_root + 'MJ/'
-mj_folder_names = ['/MJ_test', 'MJ_valid', 'MJ_train']
-# ST dataset
-train_root_st = train_root + 'ST/'
+# train_root = data_root + 'training/'
+# # MJ dataset
+# train_root_mj = train_root + 'MJ/'
+# mj_folder_names = ['/MJ_test', 'MJ_valid', 'MJ_train']
+# # ST dataset
+# train_root_st = train_root + 'ST/'
 
-train_dataset_mj = [dict(type='LmdbDataset', root=train_root_mj + folder_name)
-                    for folder_name in mj_folder_names]
-train_dataset_st = [dict(type='LmdbDataset', root=train_root_st)]
-
+# train_dataset_mj = [dict(type='LmdbDataset', root=train_root_mj + folder_name)
+#                     for folder_name in mj_folder_names]
+# train_dataset_st = [dict(type='LmdbDataset', root=train_root_st)]
+train_dataset_st = [dict(type='LmdbDataset', root="table_lmdb_dataset/train")]
 # valid
-valid_root = data_root + 'validation/'
-valid_dataset = dict(type='LmdbDataset', root=valid_root, **test_dataset_params)
-
+# valid_root = data_root + 'validation/'
+# valid_dataset = dict(type='LmdbDataset', root=valid_root,
+#                      **test_dataset_params)
+valid_dataset = dict(type='LmdbDataset', root="table_lmdb_dataset/val",
+                     **test_dataset_params)
 train_transforms = [
     dict(type='Sensitive', sensitive=sensitive, need_character=character),
     dict(type='ToGray'),
@@ -271,7 +279,8 @@ train_transforms = [
 ]
 
 max_epochs = 6
-milestones = [2, 4]  # epoch start from 0, so 2 means lr decay at 3 epoch, 4 means lr decay at the end of
+# epoch start from 0, so 2 means lr decay at 3 epoch, 4 means lr decay at the end of
+milestones = [2, 4]
 
 train = dict(
     data=dict(
@@ -292,12 +301,12 @@ train = dict(
                 datasets=[
                     dict(
                         type='ConcatDatasets',
-                        datasets=train_dataset_mj,
+                        datasets=train_dataset_s,
                     ),
-                    dict(
-                        type='ConcatDatasets',
-                        datasets=train_dataset_st,
-                    )
+                    # dict(
+                    #     type='ConcatDatasets',
+                    #     datasets=train_dataset_st,
+                    # )
                 ],
                 batch_ratio=[0.5, 0.5],
                 **dataset_params,

@@ -28,6 +28,14 @@ class TrainRunner(InferenceRunner):
         if 'val' in train_cfg['data']:
             self.val_dataloader = self._build_dataloader(
                 train_cfg['data']['val'])
+            assert isinstance(self.val_dataloader, tud.DataLoader), \
+                "Only suppor single dataloader in training phase. " \
+                "Check the type of dataset please. " \
+                "If the type of dataset is list, then the type of build datalodaer will be dict." \
+                "If the type of dataset is torch.utils.data.Dataset, " \
+                "the type of build dataloader will be torch.utils.data.Dataloader. " \
+                "If you wanna combine different dataset, consider using ConcatDataset in your config file please."
+
         else:
             self.val_dataloader = None
 
@@ -67,7 +75,8 @@ class TrainRunner(InferenceRunner):
     def _build_lr_scheduler(self, cfg):
 
         return build_lr_scheduler(cfg, dict(optimizer=self.optimizer,
-                                            niter_per_epoch=len(self.train_dataloader),
+                                            niter_per_epoch=len(
+                                                self.train_dataloader),
                                             max_epochs=self.max_epochs,
                                             ))
 
@@ -93,7 +102,8 @@ class TrainRunner(InferenceRunner):
 
         self.optimizer.zero_grad()
 
-        label_input, label_len, label_target = self.converter.train_encode(label)
+        label_input, label_len, label_target = self.converter.train_encode(
+            label)
         if self.use_gpu:
             img = img.cuda()
             label_input = label_input.cuda()
@@ -107,7 +117,8 @@ class TrainRunner(InferenceRunner):
 
         loss.backward()
         if self.grad_clip != 0:
-            torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+            torch.nn.utils.clip_grad_norm_(
+                self.model.parameters(), self.grad_clip)
         self.optimizer.step()
 
         with torch.no_grad():
@@ -125,7 +136,8 @@ class TrainRunner(InferenceRunner):
     def _validate_batch(self, img, label):
         self.model.eval()
         with torch.no_grad():
-            label_input, label_length, label_target = self.converter.test_encode(label)
+            label_input, label_length, label_target = self.converter.test_encode(
+                label)
             if self.use_gpu:
                 img = img.cuda()
                 label_input = label_input.cuda()
@@ -157,13 +169,15 @@ class TrainRunner(InferenceRunner):
                     self._validate_epoch()
                     self.metric.reset()
                 if (self.iter + 1) % self.snapshot_interval == 0:
-                    self.save_model(out_dir=self.workdir, filename=f'iter{self.iter + 1}.pth')
+                    self.save_model(out_dir=self.workdir,
+                                    filename=f'iter{self.iter + 1}.pth')
                 if self.iter >= self.max_iterations:
                     flag = False
                     break
             if not iter_based:
                 self.lr_scheduler.step()
-        self.logger.info('Ending of training, save the model of the last iterations.')
+        self.logger.info(
+            'Ending of training, save the model of the last iterations.')
         self.save_model(out_dir=self.workdir, filename='final.pth')
 
     @property

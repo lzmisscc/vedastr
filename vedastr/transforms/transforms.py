@@ -1,4 +1,4 @@
-import re
+# import re
 import random
 
 import albumentations as albu
@@ -145,11 +145,11 @@ class Sensitive(DualTransform):
 
     def __call__(self, force_apply=False, **kwargs):
         label = kwargs.get('label')
-        if not self.sensitive:
-            label = label.lower()
-        out_of_char = f'[^{self.need_character}]'
-        label = re.sub(out_of_char, '', label)
-        kwargs.update(label=label)
+        # if not self.sensitive:
+        #     label = label.lower()
+        # out_of_char = f'[^{self.need_character}]'
+        # label = re.sub(out_of_char, '', label)
+        # kwargs.update(label=label)
 
         return kwargs
 
