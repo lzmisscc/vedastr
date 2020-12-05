@@ -1,9 +1,9 @@
 # work directory
+from char import character
 root_workdir = 'workdir'
 
 ###############################################################################
 # 1. deploy
-from char import character
 size = (32, 100)
 mean, std = 0.5, 0.5
 
@@ -15,7 +15,7 @@ norm_cfg = dict(type='BN')
 num_class = len(character) + 1
 
 deploy = dict(
-    gpu_id='3',
+    gpu_id='7',
     transform=[
         dict(type='Sensitive', sensitive=sensitive, need_character=character),
         dict(type='ToGray'),
@@ -46,19 +46,26 @@ deploy = dict(
                                                   stride=1, padding=1, bias=False, norm_cfg=norm_cfg)),
                                     ('conv', dict(type='ConvModule', in_channels=64, out_channels=128, kernel_size=3,
                                                   stride=1, padding=1, bias=False, norm_cfg=norm_cfg)),
-                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=2, padding=0)),
-                                    ('block', dict(block_name='BasicBlock', planes=256, blocks=1, stride=1)),
+                                    ('pool', dict(type='MaxPool2d',
+                                                  kernel_size=2, stride=2, padding=0)),
+                                    ('block', dict(block_name='BasicBlock',
+                                                   planes=256, blocks=1, stride=1)),
                                     ('conv', dict(type='ConvModule', in_channels=256, out_channels=256, kernel_size=3,
                                                   stride=1, padding=1, bias=False, norm_cfg=norm_cfg)),
-                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=2, padding=0)),
-                                    ('block', dict(block_name='BasicBlock', planes=512, blocks=2, stride=1)),
+                                    ('pool', dict(type='MaxPool2d',
+                                                  kernel_size=2, stride=2, padding=0)),
+                                    ('block', dict(block_name='BasicBlock',
+                                                   planes=512, blocks=2, stride=1)),
                                     ('conv', dict(type='ConvModule', in_channels=512, out_channels=512, kernel_size=3,
                                                   stride=1, padding=1, bias=False, norm_cfg=norm_cfg)),
-                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=(2, 1), padding=(0, 1))),
-                                    ('block', dict(block_name='BasicBlock', planes=1024, blocks=5, stride=1)),
+                                    ('pool', dict(type='MaxPool2d', kernel_size=2, stride=(
+                                        2, 1), padding=(0, 1))),
+                                    ('block', dict(block_name='BasicBlock',
+                                                   planes=1024, blocks=5, stride=1)),
                                     ('conv', dict(type='ConvModule', in_channels=1024, out_channels=1024, kernel_size=3,
                                                   stride=1, padding=1, bias=False, norm_cfg=norm_cfg)),
-                                    ('block', dict(block_name='BasicBlock', planes=1024, blocks=3, stride=1)),
+                                    ('block', dict(block_name='BasicBlock',
+                                                   planes=1024, blocks=3, stride=1)),
                                     ('conv', dict(type='ConvModule', in_channels=1024, out_channels=1024, kernel_size=2,
                                                   stride=(2, 1), padding=(0, 1), bias=False, norm_cfg=norm_cfg)),
                                     ('conv', dict(type='ConvModule', in_channels=1024, out_channels=1024, kernel_size=2,
@@ -74,14 +81,17 @@ deploy = dict(
         head=dict(
             type='FCHead',
             in_channels=1024,
-            out_channels=962,
+            out_channels=(batch_max_length+1)*num_class,
             num_class=num_class,
+            # num_fcs=2,
+            # inner_channels=512,
+            # dropouts=[0.3, 0.3],
             from_layer='cnn_feat',
             batch_max_length=batch_max_length,
             activation=None,
             pool=dict(
                 type='AdaptiveAvgPool2d',
-                output_size=(1, num_class),
+                output_size=1,
             ),
         ),
     ),
@@ -127,7 +137,7 @@ batch_size = 192
 # test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
 #                      **test_dataset_params) for f_name in test_folder_names]
 test_dataset = dict(type='LmdbDataset', root="table_lmdb_dataset/val",
-                     **test_dataset_params)
+                    **test_dataset_params)
 test = dict(
     data=dict(
         dataloader=dict(
@@ -220,7 +230,7 @@ train = dict(
         ),
     ),
     optimizer=dict(type='Adam', lr=0.001),
-    criterion=dict(type='CrossEntropyLoss', ignore_index=37),
+    criterion=dict(type='CrossEntropyLoss', ignore_index=-100),
     lr_scheduler=dict(type='StepLR',
                       milestones=milestones,
                       warmup_epochs=0.2,

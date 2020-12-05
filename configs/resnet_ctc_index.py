@@ -11,7 +11,7 @@ norm_cfg = dict(type='BN')
 num_class = len(character) + 1
 
 deploy = dict(
-    gpu_id='6',
+    gpu_id='7',
     transform=[
         dict(type='Sensitive', sensitive=sensitive, need_character=character),
         dict(type='ToGray'),
@@ -133,10 +133,9 @@ batch_size = 192
 # test_dataset = [dict(type='LmdbDataset', root=test_root + f_name,
 #                      **test_dataset_params) for f_name in test_folder_names]
 
-test_dataset = [
-    dict(type='IndexDataset', root="/data/lz/GitHub/table_ocr/data/val",gt_txt="/data/lz/GitHub/table_ocr/index_val.txt",
+test_dataset =  dict(type='IndexDataset', root="/data/lz/GitHub/table_ocr/data/val",gt_txt="/data/lz/GitHub/table_ocr/index_val.txt",
          **test_dataset_params)
-]
+
 test = dict(
     data=dict(
         dataloader=dict(

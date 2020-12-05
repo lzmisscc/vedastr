@@ -19,10 +19,10 @@ def parse_args():
     parser.add_argument('config', type=str, help='config file path')
     parser.add_argument('checkpoint', type=str, help='checkpoint file path')
     parser.add_argument('image', type=str, help='sample image path')
-    parser.add_argument('--dtypes', default=('fp32', 'fp16', 'int8'),
+    parser.add_argument('--dtypes', default=('fp32', 'fp16',),
                         nargs='+', type=str, choices=['fp32', 'fp16', 'int8'],
                         help='dtypes for benchmark')
-    parser.add_argument('--iters', default=100, type=int,
+    parser.add_argument('--iters', default=1000, type=int,
                         help='iters for benchmark')
     parser.add_argument('--calibration_images', default=None, type=str,
                         help='images dir used when int8 in dtypes')
@@ -70,19 +70,19 @@ def main():
                                      runner.transform, need_text)
         int8_calibrator = [CALIBRATORS[mode](dataset=calib_dataset)
                            for mode in args.calibration_modes]
-    assert isinstance(runner.test_dataloader['all'], tud.DataLoader), \
-        "Only suppor single dataloader in training phase. " \
-        "Check the type of dataset please. " \
-        "If the type of dataset is list, then the type of build datalodaer will be dict." \
-        "If the type of dataset is torch.utils.data.Dataset, " \
-        "the type of build dataloader will be torch.utils.data.Dataloader. " \
-        "If you wanna combine different dataset, consider using ConcatDataset in your config file please."
+    # assert isinstance(runner.test_dataloader['all'], tud.DataLoader), \
+    #     "Only suppor single dataloader in training phase. " \
+    #     "Check the type of dataset please. " \
+    #     "If the type of dataset is list, then the type of build datalodaer will be dict." \
+    #     "If the type of dataset is torch.utils.data.Dataset, " \
+    #     "the type of build dataloader will be torch.utils.data.Dataloader. " \
+    #     "If you wanna combine different dataset, consider using ConcatDataset in your config file please."
 
-    dataset = runner.test_dataloader['all'].dataset
-    dataset = MetricDataset(dataset, runner.converter, need_text)
+    # dataset = runner.test_dataloader['all'].dataset
+    # dataset = MetricDataset(dataset, runner.converter, need_text)
     metric = Metric(runner.metric, runner.converter)
     benchmark(model, shape, dtypes=dtypes, iters=iters,
-              int8_calibrator=int8_calibrator, dataset=dataset, metric=metric)
+              int8_calibrator=int8_calibrator, metric=metric)
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ class CTCConverterIndex(BaseConverter):
         batch_text = torch.LongTensor(len(text), self.batch_max_length).fill_(0)
         for i, t in enumerate(text):
             # 直接索引
-            text = list(map(int, list(t.split(' '))))
+            text = list(map(int, list(t.split(' ')))) if t else [13,]
             batch_text[i][:len(text)] = torch.LongTensor(text)
 
         return batch_text, torch.IntTensor(length), batch_text

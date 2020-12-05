@@ -10,14 +10,15 @@ class FCModule(nn.Module):
     Args:
     """
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 in_channels=512,
+                 out_channels=1024,
                  bias=True,
                  activation='relu',
                  inplace=True,
                  dropout=None,
-                 order=('fc', 'act')):
-        super(FCModule, self).__init__()
+                 order=('fc', 'act'),
+                 *args, **kwargs):
+        super(FCModule, self).__init__(*args, **kwargs)
         self.order = order
         self.activation = activation
         self.inplace = inplace
@@ -65,14 +66,14 @@ class FCModules(nn.Module):
     Args:
     """
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 in_channels=512,
+                 out_channels=1024,
                  bias=True,
                  activation='relu',
                  inplace=True,
                  dropouts=None,
                  num_fcs=1):
-        super().__init__()
+        super(FCModules, self).__init__()
 
         if dropouts is not None:
             assert num_fcs == len(dropouts)
